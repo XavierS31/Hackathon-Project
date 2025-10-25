@@ -6,6 +6,7 @@ export const auth0Config = {
   clientId: 'iDcHM2wW70AZriEyY9oxgKUdOAoUShKI',
   authorizationParams: {
     redirect_uri: window.location.origin,
+    audience: 'https://knighthaven-api',
     scope: 'openid profile email'
   }
 };
@@ -15,6 +16,6 @@ export const auth0Config = {
 // 2. Create a new Single Page Application
 // 3. Copy your Domain and Client ID from the Auth0 dashboard
 // 4. Replace the values above with your actual credentials
-// 5. Add http://localhost:5174 to your Allowed Callback URLs
-// 6. Add http://localhost:5174 to your Allowed Logout URLs
-// 7. Add http://localhost:5174 to your Allowed Web Origins
+// 5. Add http://localhost:3000 to your Allowed Callback URLs
+// 6. Add http://localhost:3000 to your Allowed Logout URLs
+// 7. Add http://localhost:3000 to your Allowed Web Origins
