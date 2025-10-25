@@ -10,6 +10,35 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [authError, setAuthError] = useState(null);
 
+  // Debug user data
+  useEffect(() => {
+    if (user) {
+      console.log('=== USER DATA DEBUG ===');
+      console.log('Full user object:', user);
+      console.log('Email:', user.email);
+      console.log('Email verified:', user.email_verified);
+      console.log('Email verified type:', typeof user.email_verified);
+      console.log('Nickname:', user.nickname);
+      console.log('Username:', user.username);
+      console.log('Username type:', typeof user.username);
+      console.log('Preferred username:', user.preferred_username);
+      console.log('Name:', user.name);
+      console.log('Given name:', user.given_name);
+      console.log('Family name:', user.family_name);
+      console.log('Sub (subject):', user.sub);
+      console.log('Custom username claim:', user['https://knighthaven/username']);
+      console.log('User metadata:', user.user_metadata);
+      console.log('App metadata:', user.app_metadata);
+      console.log('All user keys:', Object.keys(user));
+      console.log('User object JSON:', JSON.stringify(user, null, 2));
+      console.log('Display name result:', getDisplayName(user));
+      console.log('Is UCF user:', isUCFUser(user));
+      console.log('Is email verified:', isEmailVerified(user));
+      console.log('Is verified UCF user:', isVerifiedUCFUser(user));
+      console.log('========================');
+    }
+  }, [user]);
+
   // Check for Auth0 errors in URL parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
