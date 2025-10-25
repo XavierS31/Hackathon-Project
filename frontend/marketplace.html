@@ -256,13 +256,22 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="index.html" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">
+                    <div id="userInfo" class="hidden flex items-center space-x-3">
+                        <div class="text-gray-700">
+                            <span id="userName" class="font-medium"></span>
+                            <span id="userBadge" class="ml-2 text-xs bg-yellow-400 text-black px-2 py-1 rounded-full"></span>
+                        </div>
+                        <button onclick="logout()" class="text-gray-700 hover:text-indigo-600 transition-colors">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    <div id="authButtons" class="flex items-center space-x-2">
+                        <a href="auth.html" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                        <a href="auth.html" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">Sign Up</a>
+                    </div>
+                    <button id="postButton" onclick="openPostModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 hidden">
                         <i class="fas fa-plus mr-1"></i>Post Item
                     </button>
-                    <div class="flex items-center space-x-2">
-                        <img src="https://via.placeholder.com/32x32/667eea/ffffff?text=U" alt="User" class="w-8 h-8 rounded-full">
-                        <span class="text-sm font-medium text-gray-700">Xavier</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -820,7 +829,63 @@
         }
 
         // Initialize all interactive features
+        // Authentication state
+        let currentUser = null;
+        let authToken = localStorage.getItem('authToken');
+
+        // Check authentication on page load
+        async function checkAuth() {
+            if (!authToken) {
+                showAuthRequired();
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3001/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    showUserInfo();
+                } else {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('user');
+                    showAuthRequired();
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                showAuthRequired();
+            }
+        }
+
+        function showUserInfo() {
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('authButtons').classList.add('hidden');
+            document.getElementById('postButton').classList.remove('hidden');
+            
+            document.getElementById('userName').textContent = currentUser.displayName;
+            document.getElementById('userBadge').textContent = currentUser.isUcfVerified ? 'UCF' : 'Guest';
+        }
+
+        function showAuthRequired() {
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('authButtons').classList.remove('hidden');
+            document.getElementById('postButton').classList.add('hidden');
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            currentUser = null;
+            showAuthRequired();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
             setupSearch();
             setupCategoryFilters();
             setupSorting();
@@ -985,9 +1050,12 @@
                     formData.append('image', blob, 'item-image.jpg');
                 }
                 
-                // Send to API
+                // Send to API with authentication
                 const response = await fetch('http://localhost:3001/api/items', {
                     method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
                     body: formData
                 });
                 

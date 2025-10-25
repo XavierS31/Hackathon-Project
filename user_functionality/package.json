@@ -1,32 +1,28 @@
 {
-  "name": "knighthaven",
+  "name": "knighthaven-user-functionality",
   "version": "1.0.0",
-  "description": "KnightHaven - A local social and marketplace web app for the UCF community",
+  "description": "KnightHaven User Authentication and Management System",
   "type": "module",
-  "main": "app.js",
+  "main": "src/index.js",
   "scripts": {
     "dev": "node src/index.js",
     "api": "node src/index.js",
-    "frontend": "cd frontend && python3 -m http.server 8080",
     "start": "npm run api",
-    "start:all": "./start-all.sh",
     "start:clean": "npm run db:push && npm run api",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio",
-    "db:seed": "node dbconnect.js"
+    "db:studio": "prisma studio"
   },
   "devDependencies": {
     "prisma": "^6.18.0"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
-    "bcryptjs": "^3.0.2",
-    "cors": "^2.8.5",
     "express": "^4.21.2",
-    "express-session": "^1.18.2",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1"
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
   }
 }
