@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import logoImg from "./assets/KNIGHTHAVENLOGOWHITE.png";
 import { useAuth0 } from '@auth0/auth0-react';
+import ServicesPage from './servicePages';
 
 function App() {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+  const [currentPage, setCurrentPage] = useState('home');
 
   // temp nav behavior: just show a popup for now
   const handleNav = (pageName) => {
@@ -22,6 +24,55 @@ function App() {
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
+
+  //--YELP API ROUTE TO NODE.JS
+  const fetchYelpData = async () => {
+    try {
+      const res = await fetch("http://localhost:3001/api/yelp/orlando");
+      const data = await res.json();
+      console.log("Yelp Data successfully fetched:", data);
+      
+      alert(`Stored ${data.stored} places for Orlando`); //debugging purposes
+      // Navigate to services page after fetching data
+      setCurrentPage('services');
+    } catch (err) {
+      console.error("Error fetching Yelp data:", err);
+      alert("Failed to fetch Yelp data. Check console for details.");
+    }
+  };
+
+//END OF ROUTE TO NODE.JS API
+
+//Display YELP
+    //Fetch places already stored in DB
+    const fetchPlaces = async () => {
+      setLoadingPlaces(true);
+      try {
+        const res = await fetch("http://localhost:3001/api/places");
+        const data = await res.json();
+        setPlaces(data);
+        setShowPlaces(true);
+      } catch (err) {
+        console.error("Error loading places:", err);
+        alert("Failed to load places");
+      } finally {
+        setLoadingPlaces(false);
+      }
+    };
+
+
+//END OF DISPLAY YELP DATA
+
+
+
+
+
+
+
+  // Show services page if currentPage is 'services'
+  if (currentPage === 'services') {
+    return <ServicesPage />;
+  }
 
   return (
     <div className="page-wrap">
@@ -238,9 +289,17 @@ function App() {
 
             <button
               className="nav-link"
-              onClick={() => handleNav("Services")}
+              onClick={fetchYelpData}
             >
                Services
+            </button>
+            
+            <button
+              className="nav-link"
+              onClick={() => setCurrentPage('services')}
+              style={{ marginLeft: '0.5rem' }}
+            >
+               View Services
             </button>
           </nav>
         </div>

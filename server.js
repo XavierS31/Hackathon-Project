@@ -1,10 +1,21 @@
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
+import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3001;
+
+// Yelp API key
+const YELP_API_KEY = "HdrTZK8pCbDhmD5OTilm9wGBE3XwucLoQ3Qt7NOX__3fYYrG4CttZ9psfNc8m4kfNG32-V0jd1cnLG19fd0hoxqipBoAyFumq8_aeSW2tQGaUd_OolJhxkRa7lb8aHYx";
+
+// Google Maps API key
+const GOOGLE_MAPS_API_KEY = "AIzaSyCnaJrYTNJF3bYR8ECfBxhcqgCD4JYVRl8";
 
 // Middleware
 app.use(cors());
@@ -215,6 +226,101 @@ app.post('/api/services', async (req, res) => {
     res.status(500).json({ error: 'Failed to create service' });
   }
 });
+
+// Places endpoint - fetch stored Yelp data
+app.get('/api/places', async (req, res) => {
+  try {
+    const places = await prisma.place.findMany({
+      orderBy: { rating: 'desc' }
+    });
+    res.json(places);
+  } catch (error) {
+    console.error('Error fetching places:', error);
+    res.status(500).json({ error: 'Failed to fetch places' });
+  }
+});
+
+// Google Maps API key endpoint
+app.get('/api/maps-key', (req, res) => {
+  res.json({ apiKey: GOOGLE_MAPS_API_KEY });
+});
+
+// Yelp API route
+app.get("/api/yelp/:city", async (req, res) => {
+  const { city } = req.params;
+  console.log(`🔍 Fetching Yelp data for city: ${city}`);
+
+  try {
+    // Fetch data from Yelp API
+    const yelpUrl = `https://api.yelp.com/v3/businesses/search?term=restaurants&location=${encodeURIComponent(city)}&limit=20`;
+    console.log(`📡 Yelp API URL: ${yelpUrl}`);
+    
+    const resp = await fetch(yelpUrl, {
+      headers: {
+        Authorization: `Bearer ${YELP_API_KEY}`,
+      },
+    });
+    
+    console.log(`📊 Yelp API Response Status: ${resp.status}`);
+    const data = await resp.json();
+    console.log(`📋 Yelp API Response:`, JSON.stringify(data, null, 2));
+
+    if (!data.businesses) {
+      console.log(`❌ No businesses found in Yelp response`);
+      return res.status(400).json({ error: "Invalid response from Yelp" });
+    }
+
+    console.log(`🏢 Found ${data.businesses.length} businesses from Yelp`);
+
+    let storedCount = 0;
+    // Store each business in SQLite through Prisma
+    for (const b of data.businesses) {
+      try {
+        console.log(`💾 Storing business: ${b.name} (ID: ${b.id})`);
+        await prisma.place.upsert({
+          where: { yelpId: b.id },
+          update: {
+            name: b.name,
+            rating: b.rating,
+            reviewCount: b.review_count,
+            address: b.location?.address1 || "",
+            city: b.location?.city || "",
+            latitude: b.coordinates?.latitude,
+            longitude: b.coordinates?.longitude,
+          },
+          create: {
+            yelpId: b.id,
+            name: b.name,
+            rating: b.rating,
+            reviewCount: b.review_count,
+            address: b.location?.address1 || "",
+            city: b.location?.city || "",
+            latitude: b.coordinates?.latitude,
+            longitude: b.coordinates?.longitude,
+          },
+        });
+        storedCount++;
+        console.log(`✅ Successfully stored: ${b.name}`);
+      } catch (dbError) {
+        console.error(`❌ Error storing business ${b.name}:`, dbError);
+      }
+    }
+
+    console.log(`🎉 Total stored: ${storedCount} out of ${data.businesses.length} businesses`);
+    res.json({ stored: storedCount });
+  } catch (err) {
+    console.error(`💥 Yelp API Error:`, err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+//END OF YELP API ROUTE
+
+
+
+
+
+
 
 // Start server
 app.listen(PORT, () => {
