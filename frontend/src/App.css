@@ -78,6 +78,47 @@ body {
   max-width: 28ch;
 }
 
+/* TOP NAV BUTTONS (header) */
+.top-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.nav-link {
+  background-color: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 204, 0, 0.4);
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  min-width: 110px;
+  text-align: center;
+  box-shadow:
+    0 16px 32px rgba(0,0,0,0.9),
+    0 0 24px rgba(255,204,0,0.18);
+  transition: all 0.15s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  background-color: var(--gold);
+  color: var(--black);
+  box-shadow:
+    0 20px 40px rgba(255,204,0,0.4),
+    0 0 32px rgba(255,204,0,0.5);
+  outline: none;
+}
+
+.nav-link:active {
+  transform: scale(0.97);
+}
+
 /***************
   MAIN CONTENT
 ***************/

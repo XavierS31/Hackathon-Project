@@ -3,6 +3,11 @@ import "./App.css";
 import logoImg from "./assets/KNIGHTHAVENLOGOWHITE.png";
 
 function App() {
+  // temp nav behavior: just show a popup for now
+  const handleNav = (pageName) => {
+    alert(`${pageName} page coming soon!`);
+  };
+
   return (
     <div className="page-wrap">
       {/* HERO / TOP */}
@@ -23,6 +28,44 @@ function App() {
             A trusted social + marketplace platform built for the UCF
             community.
           </p>
+
+          {/* TOP NAV BUTTONS */}
+          <nav className="top-nav">
+            <button
+              className="nav-link"
+              onClick={() => handleNav("Home")}
+            >
+               Home
+            </button>
+
+            <button
+              className="nav-link"
+              onClick={() => handleNav("Social Events")}
+            >
+               Social
+            </button>
+
+            <button
+              className="nav-link"
+              onClick={() => handleNav("Marketplace")}
+            >
+               Marketplace
+            </button>
+
+            <button
+              className="nav-link"
+              onClick={() => handleNav("News")}
+            >
+               News
+            </button>
+
+            <button
+              className="nav-link"
+              onClick={() => handleNav("Services")}
+            >
+               Services
+            </button>
+          </nav>
         </div>
       </header>
 
@@ -84,51 +127,7 @@ function App() {
           </ul>
         </section>
 
-        {/* Features */}
-        <section className="card">
-          <div className="section-label">⚙️ Features</div>
-
-          <div className="features-wrap">
-            <div className="feature">
-              <div className="feature-name">🏠 Home</div>
-              <div className="feature-desc">
-                Your personalized dashboard — trending posts, local deals,
-                featured services.
-              </div>
-            </div>
-
-            <div className="feature">
-              <div className="feature-name">💬 Social</div>
-              <div className="feature-desc">
-                Community feed to share updates, promote events,
-                and connect with other users.
-              </div>
-            </div>
-
-            <div className="feature">
-              <div className="feature-name">🛍️ Store</div>
-              <div className="feature-desc">
-                Peer-to-peer marketplace for buying and selling safely
-                within the UCF network.
-              </div>
-            </div>
-
-            <div className="feature">
-              <div className="feature-name">📰 News</div>
-              <div className="feature-desc">
-                Curated UCF + Orlando news so you’re always in the loop.
-              </div>
-            </div>
-
-            <div className="feature">
-              <div className="feature-name">🧰 Services</div>
-              <div className="feature-desc">
-                Offer or find help — tutoring, ridesharing, tech fixes,
-                and more from verified users.
-              </div>
-            </div>
-          </div>
-        </section>
+        
 
         {/* Account system */}
         <section className="card">
@@ -189,3 +188,4 @@ function App() {
 }
 
 export default App;
+
