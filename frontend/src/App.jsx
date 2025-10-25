@@ -181,7 +181,7 @@ function App() {
               <button
                 onClick={handleLogin}
                 style={{
-                  background: 'linear-gradient(135deg, #3498db, #2ecc71)',
+                  background: 'linear-gradient(135deg, #e91e63, #f06292)',
                   color: 'white',
                   border: 'none',
                   padding: '0.75rem 2rem',
@@ -189,16 +189,16 @@ function App() {
                   cursor: 'pointer',
                   fontSize: '1.1rem',
                   fontWeight: 'bold',
-                  boxShadow: '0 4px 15px rgba(52, 152, 219, 0.3)',
+                  boxShadow: '0 4px 15px rgba(233, 30, 99, 0.3)',
                   transition: 'all 0.3s ease'
                 }}
                 onMouseOver={(e) => {
                   e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 6px 20px rgba(52, 152, 219, 0.4)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(233, 30, 99, 0.4)';
                 }}
                 onMouseOut={(e) => {
                   e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 4px 15px rgba(52, 152, 219, 0.3)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(233, 30, 99, 0.3)';
                 }}
               >
                 Login/Signup
@@ -217,9 +217,9 @@ function App() {
 
             <button
               className="nav-link"
-              onClick={() => handleNav("Social Events")}
+              onClick={() => handleNav("Events")}
             >
-               Social
+               Events
             </button>
 
             <button
