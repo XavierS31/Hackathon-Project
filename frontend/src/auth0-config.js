@@ -7,7 +7,7 @@ export const auth0Config = {
   authorizationParams: {
     redirect_uri: window.location.origin,
     audience: 'https://knighthaven-api',
-    scope: 'openid profile email read:current_user read:users'
+    scope: 'openid profile email read:current_user read:users offline_access'
   }
 };
 
