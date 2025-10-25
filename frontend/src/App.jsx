@@ -618,7 +618,7 @@ function App() {
 
         {/* Live Activity / Demo Feed */}
         <section className="card">
-          <div className="section-label">📡 LIVE ACTIVITY</div>
+          <div className="section-label">LIVE LIVE ACTIVITY</div>
 
           <div className="section-title">
             Community updates (demo data)
@@ -626,7 +626,7 @@ function App() {
 
           <ul className="bullet-list">
             <li className="bullet-item">
-              <span className="bullet-icon">✅</span>
+              <span className="bullet-icon">CHECK</span>
               <span>
                 Emma <strong>(Verified Knight)</strong> posted a tutoring offer for Calculus I.
               </span>
