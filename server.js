@@ -2,10 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import fetch from 'node-fetch';
-import dotenv from 'dotenv';
-
-// Load environment variables
-dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
@@ -363,136 +359,7 @@ app.get('/api/refresh-data', async (req, res) => {
   }
 });
 
-// Yelp API route - UCF area focused (always fetches fresh data)
-app.get("/api/yelp/:city", async (req, res) => {
-  const { city } = req.params;
-  console.log(`🔍 Fetching FRESH Yelp data for UCF area (10-mile radius)`);
-
-  try {
-    // Check if data already exists
-    const existingPlaces = await prisma.place.count();
-    if (existingPlaces > 0) {
-      console.log(`📊 Database already contains ${existingPlaces} places. Skipping fetch.`);
-      return res.json({ 
-        stored: existingPlaces,
-        categories: ["Already loaded"]
-      });
-    }
-
-    console.log("🔄 No existing data found. Fetching fresh data...");
-
-    // UCF Student Union coordinates: 28.6024° N, 81.2001° W
-    const ucfLatitude = 28.6024;
-    const ucfLongitude = -81.2001;
-    const radiusInMeters = 16093; // 10 miles = 16093 meters
-    
-    // Business categories to search for
-    const businessCategories = [
-      'restaurants',
-      'mechanics',
-      'autoservice', 
-      'nail salon',
-      'barber shop',
-      'hair salon',
-      'spa',
-      'coffee shops'
-    ];
-    
-    // Use all 8 categories for maximum variety
-    const selectedCategories = businessCategories;
-    console.log(`🎯 Using all ${selectedCategories.length} categories for maximum variety`);
-    
-    // Fetch data from each category separately and combine results
-    let allBusinesses = [];
-    const businessesPerCategory = Math.ceil(50 / selectedCategories.length); // Distribute 50 businesses across categories
-    
-    for (const category of selectedCategories) {
-      try {
-        console.log(`🔍 Fetching ${businessesPerCategory} businesses for category: ${category}`);
-        const yelpUrl = `https://api.yelp.com/v3/businesses/search?term=${category}&latitude=${ucfLatitude}&longitude=${ucfLongitude}&radius=${radiusInMeters}&limit=${businessesPerCategory}`;
-        console.log(`📡 Yelp API URL: ${yelpUrl}`);
-        
-        const resp = await fetch(yelpUrl, {
-          headers: {
-            Authorization: `Bearer ${YELP_API_KEY}`,
-          },
-        });
-        
-        console.log(`📊 Yelp API Response Status for ${category}: ${resp.status}`);
-        const data = await resp.json();
-        
-        if (data.businesses && data.businesses.length > 0) {
-          console.log(`🏢 Found ${data.businesses.length} businesses for ${category}`);
-          allBusinesses = allBusinesses.concat(data.businesses);
-        } else {
-          console.log(`❌ No businesses found for category: ${category}`);
-        }
-      } catch (categoryError) {
-        console.error(`❌ Error fetching data for category ${category}:`, categoryError);
-      }
-    }
-
-    // Shuffle all businesses to randomize the order
-    allBusinesses = allBusinesses.sort(() => Math.random() - 0.5);
-    console.log(`🎲 Total businesses collected: ${allBusinesses.length}`);
-
-    let storedCount = 0;
-    // Store each business in SQLite through Prisma (MAX 50)
-    for (const b of allBusinesses) {
-      if (storedCount >= 50) {
-        console.log(`⚠️ Reached limit of 50 businesses, stopping storage`);
-        break;
-      }
-      
-      try {
-        console.log(`💾 Storing business: ${b.name} (ID: ${b.id}) - Category: ${b.categories?.[0]?.title || 'Unknown'}`);
-        await prisma.place.upsert({
-          where: { yelpId: b.id },
-          update: {
-            name: b.name,
-            description: b.categories?.[0]?.title || "Business",
-            rating: b.rating,
-            reviewCount: b.review_count,
-            address: b.location?.address1 || "",
-            city: b.location?.city || "",
-            latitude: b.coordinates?.latitude,
-            longitude: b.coordinates?.longitude,
-          },
-          create: {
-            yelpId: b.id,
-            name: b.name,
-            description: b.categories?.[0]?.title || "Business",
-            rating: b.rating,
-            reviewCount: b.review_count,
-            address: b.location?.address1 || "",
-            city: b.location?.city || "",
-            latitude: b.coordinates?.latitude,
-            longitude: b.coordinates?.longitude,
-          },
-        });
-        storedCount++;
-        console.log(`✅ Successfully stored: ${b.name}`);
-      } catch (dbError) {
-        console.error(`❌ Error storing business ${b.name}:`, dbError);
-      }
-    }
-
-    console.log(`🎉 Total stored: ${storedCount} out of ${allBusinesses.length} businesses`);
-    res.json({ 
-      stored: storedCount,
-      categories: selectedCategories
-    });
-  } catch (err) {
-    console.error(`💥 Yelp API Error:`, err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-//END OF YELP API ROUTE
-
-
-
-
+// Note: Yelp API functionality is handled by /api/refresh-data endpoint above
 
 
 

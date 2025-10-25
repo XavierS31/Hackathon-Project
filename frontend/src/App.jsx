@@ -3,6 +3,7 @@ import "./App.css";
 import logoImg from "./assets/KNIGHTHAVENLOGOWHITE.png";
 import { useAuth0 } from '@auth0/auth0-react';
 import ServicesPage from './servicePages';
+import Events from './Events';
 
 function App() {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
@@ -71,9 +72,14 @@ function App() {
 
 
   // Show services page if currentPage is 'services'
-            if (currentPage === 'services') {
-              return <ServicesPage onBack={() => setCurrentPage('home')} />;
-            }
+  if (currentPage === 'services') {
+    return <ServicesPage onBack={() => setCurrentPage('home')} />;
+  }
+
+  // Show events page if currentPage is 'events'
+  if (currentPage === 'events') {
+    return <Events onBack={() => setCurrentPage('home')} />;
+  }
 
   return (
     <div className="page-wrap">
@@ -269,9 +275,9 @@ function App() {
 
             <button
               className="nav-link"
-              onClick={() => handleNav("Social Events")}
+              onClick={() => setCurrentPage('events')}
             >
-               Social
+               Events
             </button>
 
             <button
