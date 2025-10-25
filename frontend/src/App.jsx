@@ -3,10 +3,87 @@ import "./App.css";
 import logoImg from "./assets/KNIGHTHAVENLOGOWHITE.png";
 import { useAuth0 } from '@auth0/auth0-react';
 import Events from '../../events_tab/frontend/Events';
+import { isUCFUser, getDisplayName, isEmailVerified, isVerifiedUCFUser } from './auth0-config.js';
 
 function App() {
-  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();
   const [currentPage, setCurrentPage] = useState('home');
+  const [authError, setAuthError] = useState(null);
+
+  // Check for Auth0 errors in URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    const errorDescription = urlParams.get('error_description');
+    
+    // Debug logging
+    console.log('=== AUTH0 ERROR DEBUG ===');
+    console.log('Current URL:', window.location.href);
+    console.log('URL Error:', error);
+    console.log('URL Error Description:', errorDescription);
+    console.log('All URL params:', Object.fromEntries(urlParams.entries()));
+    console.log('========================');
+    
+    // Check if we're on Auth0's error page
+    if (window.location.href.includes('auth0.com') && window.location.href.includes('error')) {
+      console.log('Detected Auth0 error page');
+      // This means Auth0 is showing the error, not redirecting back
+    }
+    
+    if (error === 'access_denied' && errorDescription === 'ucf_only') {
+      setAuthError('You must use a @ucf.edu email address to sign up. Please try again with your UCF email.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (error === 'invalid_request' && errorDescription?.includes('user_exists')) {
+      setAuthError('An account with this email already exists. Please try logging in instead.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (error === 'invalid_request' && errorDescription?.includes('email')) {
+      setAuthError('An account with this email already exists. Please try logging in instead.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (error === 'invalid_request' && errorDescription?.includes('already exists')) {
+      setAuthError('An account with this email already exists. Please try logging in instead.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (error === 'invalid_request') {
+      setAuthError('An account with this email already exists. Please try logging in instead.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (error) {
+      // Show the exact error for debugging
+      setAuthError(`DEBUG: Error=${error}, Description=${errorDescription || 'None'}`);
+      console.log('Setting generic error message:', error, errorDescription);
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // Handle Auth0 errors from the hook
+  useEffect(() => {
+    if (error) {
+      console.log('Auth0 Hook Error:', error);
+      console.log('Error type:', typeof error);
+      console.log('Error keys:', Object.keys(error));
+      
+      // Handle different error formats
+      const errorCode = error.error || error.code || error.type;
+      const errorMessage = error.error_description || error.message || error.description;
+      
+      console.log('Parsed error code:', errorCode);
+      console.log('Parsed error message:', errorMessage);
+      
+      if (errorCode === 'access_denied' && errorMessage === 'ucf_only') {
+        setAuthError('You must use a @ucf.edu email address to sign up. Please try again with your UCF email.');
+      } else if (errorCode === 'invalid_request' || errorCode === 'user_exists' || errorCode === 'email_exists') {
+        setAuthError('An account with this email already exists. Please try logging in instead.');
+      } else if (errorMessage?.includes('user_exists') || errorMessage?.includes('already exists') || errorMessage?.includes('email')) {
+        setAuthError('An account with this email already exists. Please try logging in instead.');
+      } else {
+        setAuthError(`Authentication error: ${errorCode || 'Unknown'} - ${errorMessage || 'Please try again'}`);
+      }
+    }
+  }, [error]);
 
   // Listen for navigation messages from child components
   useEffect(() => {
@@ -25,7 +102,7 @@ function App() {
     if (pageName === 'Home') {
       setCurrentPage('home');
       if (isAuthenticated) {
-        alert(`Welcome back, ${user?.name || user?.email}!`);
+        alert(`Welcome back, ${getDisplayName(user)}!`);
       }
     } else if (pageName === 'Events') {
       setCurrentPage('events');
@@ -35,7 +112,31 @@ function App() {
   };
 
   const handleLogin = () => {
-    loginWithRedirect();
+    setAuthError(null); // Clear any existing errors
+    
+    // Force login mode to avoid signup errors
+    loginWithRedirect({
+      authorizationParams: {
+        prompt: 'login', // Force login screen
+        screen_hint: 'login' // Show login instead of signup
+      }
+    });
+  };
+
+  const handleRetryLogin = () => {
+    setAuthError(null); // Clear any existing errors
+    
+    // Clear browser storage to reset Auth0 state
+    localStorage.removeItem('auth0.is.authenticated');
+    sessionStorage.clear();
+    
+    // Force a completely fresh login attempt
+    loginWithRedirect({
+      authorizationParams: {
+        prompt: 'login', // Force login screen
+        screen_hint: 'signup' // Show signup option
+      }
+    });
   };
 
   const handleLogout = () => {
@@ -113,7 +214,7 @@ function App() {
                 >
                   <div
                     style={{
-                      color: 'var(--text-main)',
+                      color: isEmailVerified(user) ? 'var(--text-main)' : '#888',
                       fontWeight: '600',
                       backgroundColor: 'rgba(0,0,0,0.4)',
                       border: '1px solid rgba(255, 204, 0, 0.4)',
@@ -124,8 +225,30 @@ function App() {
                         "0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255,204,0,0.2)"
                     }}
                   >
-                    Welcome, {user?.name || user?.email}!
+                    Welcome, {getDisplayName(user)}! 
+                    {isVerifiedUCFUser(user) ? ' 🎓 (Verified Knight)' : 
+                     isUCFUser(user) && !isEmailVerified(user) ? ' ⚠️ (Not Verified)' :
+                     isEmailVerified(user) ? ' 🌎 (Community Member)' : ' ⚠️ (Not Verified)'}
                   </div>
+
+                  {/* Email verification reminder */}
+                  {!isEmailVerified(user) && (
+                    <div
+                      style={{
+                        color: '#ffa500',
+                        backgroundColor: 'rgba(255, 165, 0, 0.1)',
+                        border: '1px solid rgba(255, 165, 0, 0.3)',
+                        borderRadius: '6px',
+                        padding: '0.5rem 0.75rem',
+                        fontSize: '0.8rem',
+                        fontWeight: '500',
+                        textAlign: 'center',
+                        marginTop: '0.5rem'
+                      }}
+                    >
+                      📧 Please verify your email to unlock full features
+                    </div>
+                  )}
 
                   <button
                     onClick={handleLogout}
@@ -160,6 +283,105 @@ function App() {
               </>
             ) : (
               <>
+                {/* Error Message Display */}
+                {authError && (
+                  <div style={{ 
+                    margin: '1rem 0', 
+                    padding: '1rem', 
+                    backgroundColor: 'rgba(255, 0, 0, 0.1)', 
+                    border: '1px solid rgba(255, 0, 0, 0.3)', 
+                    borderRadius: '8px', 
+                    color: '#ff6b6b',
+                    textAlign: 'center',
+                    fontSize: '0.9rem',
+                    fontWeight: '500',
+                    position: 'relative'
+                  }}>
+                    ⚠️ {authError}
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <button
+                        onClick={handleRetryLogin}
+                        style={{
+                          background: 'linear-gradient(135deg, #39FF14, #2ecb10)',
+                          color: 'black',
+                          border: 'none',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '0.8rem',
+                          fontWeight: '600',
+                          marginRight: '0.5rem'
+                        }}
+                      >
+                        Try Again
+                      </button>
+                      {authError.includes('already exists') && (
+                        <button
+                          onClick={() => {
+                            setAuthError(null);
+                            // Force login mode instead of signup
+                            loginWithRedirect({
+                              authorizationParams: {
+                                prompt: 'login',
+                                screen_hint: 'login'
+                              }
+                            });
+                          }}
+                          style={{
+                            background: 'linear-gradient(135deg, #4A90E2, #357ABD)',
+                            color: 'white',
+                            border: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '0.8rem',
+                            fontWeight: '600',
+                            marginRight: '0.5rem'
+                          }}
+                        >
+                          Switch to Login
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setAuthError(null)}
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.2)',
+                          color: '#ff6b6b',
+                          border: '1px solid rgba(255, 0, 0, 0.3)',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '0.8rem',
+                          fontWeight: '600'
+                        }}
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => setAuthError(null)}
+                      style={{
+                        position: 'absolute',
+                        top: '0.5rem',
+                        right: '0.5rem',
+                        background: 'none',
+                        border: 'none',
+                        color: '#ff6b6b',
+                        fontSize: '1.2rem',
+                        cursor: 'pointer',
+                        padding: '0',
+                        width: '20px',
+                        height: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+                
                 <div style={{ margin: '1rem 0', display: 'flex', justifyContent: 'center' }}>
                   <button
                     onClick={handleLogin}
