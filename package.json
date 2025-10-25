@@ -1,4 +1,20 @@
 {
+  "name": "knighthaven",
+  "version": "1.0.0",
+  "description": "KnightHaven - A local social and marketplace web app for the UCF community",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node app.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "node dbconnect.js"
+  },
+  "devDependencies": {
+    "prisma": "^6.18.0"
+  },
   "dependencies": {
     "@prisma/client": "^6.18.0"
   }
