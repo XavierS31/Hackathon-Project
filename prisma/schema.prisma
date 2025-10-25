@@ -68,6 +68,7 @@ model Place {
   id           String   @id @default(cuid())
   yelpId       String   @unique
   name         String
+  description  String?
   rating       Float?
   reviewCount  Int?
   address      String?

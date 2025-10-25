@@ -25,19 +25,20 @@ function App() {
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
-  //--YELP API ROUTE TO NODE.JS
+  //--YELP API ROUTE TO NODE.JS (ALWAYS FETCHES FRESH DATA)
   const fetchYelpData = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/yelp/orlando");
+      console.log("🔄 Fetching FRESH Yelp data...");
+      const res = await fetch("http://localhost:3001/api/refresh-data");
       const data = await res.json();
-      console.log("Yelp Data successfully fetched:", data);
+      console.log("✅ Fresh Yelp Data successfully fetched:", data);
       
-      alert(`Stored ${data.stored} places for Orlando`); //debugging purposes
-      // Navigate to services page after fetching data
+                alert(`🔄 Refreshed! Stored ${data.stored} fresh places (max 50)\n🎲 Categories: ${data.categories ? data.categories.join(', ') : 'Random'}`);
+      // Navigate to services page after fetching fresh data
       setCurrentPage('services');
     } catch (err) {
-      console.error("Error fetching Yelp data:", err);
-      alert("Failed to fetch Yelp data. Check console for details.");
+      console.error("❌ Error fetching fresh Yelp data:", err);
+      alert("Failed to fetch fresh Yelp data. Check console for details.");
     }
   };
 
@@ -70,9 +71,9 @@ function App() {
 
 
   // Show services page if currentPage is 'services'
-  if (currentPage === 'services') {
-    return <ServicesPage />;
-  }
+            if (currentPage === 'services') {
+              return <ServicesPage onBack={() => setCurrentPage('home')} />;
+            }
 
   return (
     <div className="page-wrap">
@@ -288,19 +289,14 @@ function App() {
             </button>
 
             <button
-              className="nav-link"
-              onClick={fetchYelpData}
-            >
-               Services
-            </button>
-            
-            <button
-              className="nav-link"
-              onClick={() => setCurrentPage('services')}
-              style={{ marginLeft: '0.5rem' }}
-            >
-               View Services
-            </button>
+                className="nav-link"
+                onClick={async () => {
+                    await fetchYelpData();       // 1️⃣ Fetch + store Yelp data
+                    setCurrentPage("services");  // 2️⃣ Then switch to services page
+  }}
+>
+  Services
+</button>
           </nav>
         </div>
       </header>
