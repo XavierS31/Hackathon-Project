@@ -1,11 +1,26 @@
 import React from "react";
 import "./App.css";
 import logoImg from "./assets/KNIGHTHAVENLOGOWHITE.png";
+import { useAuth0 } from '@auth0/auth0-react';
 
 function App() {
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+
   // temp nav behavior: just show a popup for now
   const handleNav = (pageName) => {
-    alert(`${pageName} page coming soon!`);
+    if (pageName === 'Home' && isAuthenticated) {
+      alert(`Welcome back, ${user?.name || user?.email}!`);
+    } else {
+      alert(`${pageName} page coming soon!`);
+    }
+  };
+
+  const handleLogin = () => {
+    loginWithRedirect();
+  };
+
+  const handleLogout = () => {
+    logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
   return (
@@ -28,6 +43,59 @@ function App() {
             A trusted social + marketplace platform built for the UCF
             community.
           </p>
+
+          {/* Authentication Section */}
+          {isLoading ? (
+            <div style={{ margin: '1rem 0', color: '#666' }}>Loading...</div>
+          ) : isAuthenticated ? (
+            <div style={{ margin: '1rem 0', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div style={{ color: '#2c3e50', fontWeight: 'bold' }}>
+                Welcome, {user?.name || user?.email}!
+              </div>
+              <button
+                onClick={handleLogout}
+                style={{
+                  background: '#e74c3c',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div style={{ margin: '1rem 0', display: 'flex', justifyContent: 'center' }}>
+              <button
+                onClick={handleLogin}
+                style={{
+                  background: 'linear-gradient(135deg, #3498db, #2ecc71)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.75rem 2rem',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  boxShadow: '0 4px 15px rgba(52, 152, 219, 0.3)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(52, 152, 219, 0.4)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(52, 152, 219, 0.3)';
+                }}
+              >
+                Login/Signup
+              </button>
+            </div>
+          )}
 
           {/* TOP NAV BUTTONS */}
           <nav className="top-nav">
