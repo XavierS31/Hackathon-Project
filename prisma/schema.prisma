@@ -43,6 +43,7 @@ model Listing {
   description String
   price       Float
   category    String
+  imagePath   String?
   authorId    Int
   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   isActive    Boolean  @default(true)

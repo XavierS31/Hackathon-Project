@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnightHaven Marketplace - Buy & Sell in UCF Community</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+        }
+        
+        /* DoorDash-style animations */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .image-upload-area {
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .image-upload-area:hover {
+            border-color: #667eea;
+            background-color: #f7fafc;
+        }
+        .image-upload-area.dragover {
+            border-color: #667eea;
+            background-color: #edf2f7;
+            transform: scale(1.02);
+        }
+        
+        .item-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .item-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .item-card:hover::before {
+            left: 100%;
+        }
+        
+        .price-tag {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .price-tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .like-button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .like-button:hover {
+            transform: scale(1.2);
+        }
+        .like-button.liked {
+            color: #e53e3e;
+            transform: scale(1.3);
+        }
+        
+        .like-button.liked::after {
+            content: '❤️';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 12px;
+            animation: heart-burst 0.6s ease-out;
+        }
+        
+        @keyframes heart-burst {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        /* DoorDash-style floating action button */
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+            color: black;
+            border: none;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6);
+        }
+        
+        /* Interactive search bar */
+        .search-bar {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .search-bar:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+        
+        /* Category filter pills */
+        .category-pill {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-pill.active {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+            color: black;
+            transform: scale(1.05);
+        }
+        
+        /* Loading animation */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #FFD700;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        /* Image zoom effect */
+        .image-zoom {
+            transition: transform 0.3s ease;
+            cursor: zoom-in;
+        }
+        
+        .image-zoom:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Pulse animation for new items */
+        .pulse-new {
+            animation: pulse-new 2s infinite;
+        }
+        
+        @keyframes pulse-new {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+        }
+        
+        /* Stagger animation for cards */
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: stagger-in 0.6s ease forwards;
+        }
+        
+        @keyframes stagger-in {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Interactive modal */
+        .modal-backdrop {
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-content.show {
+            transform: scale(1) translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-indigo-600">⚔️ KnightHaven</h1>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">
+                        <i class="fas fa-plus mr-1"></i>Post Item
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://via.placeholder.com/32x32/667eea/ffffff?text=U" alt="User" class="w-8 h-8 rounded-full">
+                        <span class="text-sm font-medium text-gray-700">Xavier</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    🛍️ KnightHaven Marketplace
+                </h1>
+                <p class="text-xl mb-8 text-blue-100">
+                    Buy, sell, and discover amazing items within the UCF community
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="openPostModal()" class="bg-yellow-400 text-gray-900 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-300 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Sell Something
+                    </button>
+                    <button class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-search mr-2"></i>Browse Items
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Filters & Search -->
+    <section class="bg-white py-6 shadow-sm sticky top-16 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex-1">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            placeholder="Search items, categories, or sellers..." 
+                            class="search-bar w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        >
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        <button id="clearSearch" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600 hidden">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="toggleFilters()" class="bg-gray-100 text-gray-700 px-4 py-3 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-filter mr-2"></i>Filters
+                    </button>
+                    <select id="sortSelect" class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                        <option value="newest">Sort by Newest</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="name">Name A-Z</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Category Filter Pills -->
+            <div id="categoryFilters" class="mt-4 flex flex-wrap gap-3">
+                <button class="category-pill active px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700" data-category="all">
+                    <i class="fas fa-th mr-2"></i>All Items
+                </button>
+                <button class="category-pill px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200" data-category="Electronics">
+                    <i class="fas fa-laptop mr-2"></i>Electronics
+                </button>
+                <button class="category-pill px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200" data-category="Books">
+                    <i class="fas fa-book mr-2"></i>Books
+                </button>
+                <button class="category-pill px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200" data-category="Clothing">
+                    <i class="fas fa-tshirt mr-2"></i>Clothing
+                </button>
+                <button class="category-pill px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200" data-category="Furniture">
+                    <i class="fas fa-couch mr-2"></i>Furniture
+                </button>
+                <button class="category-pill px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200" data-category="Services">
+                    <i class="fas fa-tools mr-2"></i>Services
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Empty State / First Item -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div id="emptyState" class="text-center">
+                <div class="max-w-md mx-auto">
+                    <div class="mb-8">
+                        <div class="bg-gradient-to-r from-indigo-100 to-purple-100 w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-store text-4xl text-indigo-600"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                            🎉 Be the First to Post!
+                        </h2>
+                        <p class="text-lg text-gray-600 mb-8">
+                            The KnightHaven marketplace is brand new! Be the first UCF student to list an item and start building our community marketplace.
+                        </p>
+                        <button onclick="openPostModal()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-plus mr-2"></i>Post Your First Item
+                        </button>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Why start selling on KnightHaven?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+                            <div class="flex items-start">
+                                <div class="bg-green-100 p-2 rounded-lg mr-3">
+                                    <i class="fas fa-shield-alt text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">UCF Verified</h4>
+                                    <p class="text-sm text-gray-600">Only verified UCF students</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                                    <i class="fas fa-users text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Local Community</h4>
+                                    <p class="text-sm text-gray-600">Connect with fellow Knights</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-purple-100 p-2 rounded-lg mr-3">
+                                    <i class="fas fa-rocket text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Easy & Fast</h4>
+                                    <p class="text-sm text-gray-600">Quick setup, instant listing</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Items Grid (Hidden initially) -->
+            <div id="itemsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
+                <!-- Items will be dynamically added here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Item Detail Modal -->
+    <div id="itemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 id="itemModalTitle" class="text-2xl font-bold text-gray-900">Item Details</h2>
+                        <button onclick="closeItemModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Image Section -->
+                        <div>
+                            <img id="itemModalImage" src="" alt="Item" class="w-full h-96 object-cover rounded-lg shadow-lg">
+                            <div class="flex space-x-2 mt-4">
+                                <button class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                                    <i class="fas fa-heart mr-2"></i>Save Item
+                                </button>
+                                <button class="flex-1 border border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors">
+                                    <i class="fas fa-share mr-2"></i>Share
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Details Section -->
+                        <div>
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span id="itemModalPrice" class="text-3xl font-bold text-indigo-600">$0</span>
+                                    <span id="itemModalCategory" class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">Category</span>
+                                </div>
+                                <h3 id="itemModalTitleText" class="text-xl font-semibold text-gray-900 mb-2">Item Title</h3>
+                                <p id="itemModalDescription" class="text-gray-600">Item description goes here...</p>
+                            </div>
+                            
+                            <!-- Seller Info -->
+                            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                <h4 class="font-semibold text-gray-900 mb-3">Contact Information</h4>
+                                <div class="flex items-center mb-3">
+                                    <img id="itemModalSellerAvatar" src="https://via.placeholder.com/40x40/667eea/ffffff?text=U" alt="" class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <p id="itemModalSellerName" class="font-medium text-gray-900">Name</p>
+                                        <p class="text-sm text-gray-600">UCF Student</p>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                        <i class="fas fa-comment mr-2"></i>Message
+                                    </button>
+                                    <button class="flex-1 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-phone mr-2"></i>Call
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Item Details -->
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">Item Details</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-600">Condition:</span>
+                                            <span id="itemModalCondition" class="ml-2 font-medium">New</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Category:</span>
+                                            <span id="itemModalCategoryDetail" class="ml-2 font-medium">Electronics</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Posted:</span>
+                                            <span id="itemModalDate" class="ml-2 font-medium">Today</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Location:</span>
+                                            <span class="ml-2 font-medium">UCF Campus</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Safety Tips -->
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-yellow-800 mb-2">
+                                        <i class="fas fa-shield-alt mr-2"></i>Safety Tips
+                                    </h4>
+                                    <ul class="text-sm text-yellow-700 space-y-1">
+                                        <li>• Meet in public places on campus</li>
+                                        <li>• Verify UCF student status</li>
+                                        <li>• Inspect items before payment</li>
+                                        <li>• Use secure payment methods</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Item Modal -->
+    <div id="postModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Post an Item for Sale</h2>
+                        <button onclick="closePostModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="itemForm" class="space-y-6">
+                        <!-- Image Upload -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Photos</label>
+                            <div id="imageUploadArea" class="image-upload-area rounded-lg p-8 text-center cursor-pointer">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                                <p class="text-gray-600 mb-2">Drag & drop images here or click to upload</p>
+                                <p class="text-sm text-gray-500">PNG, JPG up to 10MB each</p>
+                                <input type="file" id="imageInput" multiple accept="image/*" class="hidden">
+                            </div>
+                            <div id="imagePreview" class="grid grid-cols-2 gap-4 mt-4 hidden">
+                                <!-- Preview images will be added here -->
+                            </div>
+                        </div>
+
+                        <!-- Item Details -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Item Title</label>
+                                <input type="text" placeholder="e.g., MacBook Pro 13" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <option>Select Category</option>
+                                    <option>Textbooks</option>
+                                    <option>Electronics</option>
+                                    <option>Clothing</option>
+                                    <option>Furniture</option>
+                                    <option>Services</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea placeholder="Describe your item in detail..." rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+                                <input type="number" placeholder="0.00" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <option>Select Condition</option>
+                                    <option>New</option>
+                                    <option>Like New</option>
+                                    <option>Good</option>
+                                    <option>Fair</option>
+                                    <option>Poor</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-4">
+                            <button type="button" onclick="closePostModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Post Item
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="openPostModal()" title="Post New Item">
+        <i class="fas fa-plus text-2xl"></i>
+    </button>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50"></div>
+
+    <script>
+        // Enhanced DoorDash-style interactions
+        let currentFilter = 'all';
+        let currentSort = 'newest';
+        let searchQuery = '';
+        let likedItems = new Set();
+
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg mb-2`;
+            toast.textContent = message;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Auto remove
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Enhanced search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const clearButton = document.getElementById('clearSearch');
+            
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                clearButton.classList.toggle('hidden', !searchQuery);
+                filterAndSortItems();
+            });
+            
+            clearButton.addEventListener('click', () => {
+                searchInput.value = '';
+                searchQuery = '';
+                clearButton.classList.add('hidden');
+                filterAndSortItems();
+            });
+        }
+
+        // Category filter functionality
+        function setupCategoryFilters() {
+            const categoryPills = document.querySelectorAll('.category-pill');
+            
+            categoryPills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    // Remove active class from all pills
+                    categoryPills.forEach(p => p.classList.remove('active'));
+                    
+                    // Add active class to clicked pill
+                    pill.classList.add('active');
+                    
+                    // Update current filter
+                    currentFilter = pill.dataset.category;
+                    filterAndSortItems();
+                });
+            });
+        }
+
+        // Sort functionality
+        function setupSorting() {
+            const sortSelect = document.getElementById('sortSelect');
+            
+            sortSelect.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                filterAndSortItems();
+            });
+        }
+
+        // Filter and sort items
+        function filterAndSortItems() {
+            const items = document.querySelectorAll('.item-card');
+            let filteredItems = Array.from(items);
+            
+            // Filter by category
+            if (currentFilter !== 'all') {
+                filteredItems = filteredItems.filter(item => {
+                    const category = item.dataset.category;
+                    return category === currentFilter;
+                });
+            }
+            
+            // Filter by search query
+            if (searchQuery) {
+                filteredItems = filteredItems.filter(item => {
+                    const title = item.querySelector('h3').textContent.toLowerCase();
+                    const description = item.querySelector('p').textContent.toLowerCase();
+                    const seller = item.querySelector('.seller-name').textContent.toLowerCase();
+                    
+                    return title.includes(searchQuery.toLowerCase()) ||
+                           description.includes(searchQuery.toLowerCase()) ||
+                           seller.includes(searchQuery.toLowerCase());
+                });
+            }
+            
+            // Sort items
+            filteredItems.sort((a, b) => {
+                switch (currentSort) {
+                    case 'price-low':
+                        return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                    case 'price-high':
+                        return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                    case 'name':
+                        return a.dataset.title.localeCompare(b.dataset.title);
+                    case 'newest':
+                    default:
+                        return new Date(b.dataset.date) - new Date(a.dataset.date);
+                }
+            });
+            
+            // Hide all items first
+            items.forEach(item => {
+                item.style.display = 'none';
+                item.classList.remove('stagger-item');
+            });
+            
+            // Show filtered items with stagger animation
+            filteredItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.display = 'block';
+                    item.classList.add('stagger-item');
+                    item.style.animationDelay = `${index * 0.1}s`;
+                }, index * 50);
+            });
+            
+            // Update empty state
+            updateEmptyState(filteredItems.length === 0);
+        }
+
+        // Like functionality
+        function toggleLike(itemId) {
+            const likeButton = document.querySelector(`[data-item-id="${itemId}"] .like-button`);
+            
+            if (likedItems.has(itemId)) {
+                likedItems.delete(itemId);
+                likeButton.classList.remove('liked');
+                showToast('Removed from favorites', 'info');
+            } else {
+                likedItems.add(itemId);
+                likeButton.classList.add('liked');
+                showToast('Added to favorites!', 'success');
+            }
+        }
+
+        // Enhanced image upload with drag & drop
+        function setupImageUpload() {
+            const uploadArea = document.getElementById('imageUpload');
+            const fileInput = document.getElementById('imageInput');
+            const preview = document.getElementById('imagePreview');
+            
+            // Drag and drop functionality
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect(files[0]);
+                }
+            });
+            
+            // Click to upload
+            uploadArea.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelect(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleFileSelect(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('imagePreview');
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" class="w-full h-48 object-cover rounded-lg">
+                        <button type="button" onclick="removeImage()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+                            <i class="fas fa-times text-xs"></i>
+                        </button>
+                    `;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                showToast('Please select a valid image file', 'error');
+            }
+        }
+
+        function removeImage() {
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('imageInput').value = '';
+        }
+
+        // Modal functions
+        function openPostModal() {
+            document.getElementById('postModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePostModal() {
+            document.getElementById('postModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Initialize all interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSearch();
+            setupCategoryFilters();
+            setupSorting();
+            setupImageUpload();
+            loadItems();
+            
+            // Add stagger animation to existing items
+            const items = document.querySelectorAll('.item-card');
+            items.forEach((item, index) => {
+                item.classList.add('stagger-item');
+                item.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Toggle filters visibility
+        function toggleFilters() {
+            const filters = document.getElementById('categoryFilters');
+            filters.classList.toggle('hidden');
+        }
+
+        // Image upload functionality
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+
+        imageUploadArea.addEventListener('click', () => imageInput.click());
+        imageUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.add('dragover');
+        });
+        imageUploadArea.addEventListener('dragleave', () => {
+            imageUploadArea.classList.remove('dragover');
+        });
+        imageUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        // Store the image data URL
+                        uploadedImages.push(e.target.result);
+                        
+                        const preview = document.createElement('div');
+                        preview.className = 'relative';
+                        preview.innerHTML = `
+                            <img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg">
+                            <button onclick="removeImage(this)" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        `;
+                        imagePreview.appendChild(preview);
+                        imagePreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function removeImage(button) {
+            const imageElement = button.parentElement;
+            const imgSrc = imageElement.querySelector('img').src;
+            
+            // Remove from uploadedImages array
+            const index = uploadedImages.indexOf(imgSrc);
+            if (index > -1) {
+                uploadedImages.splice(index, 1);
+            }
+            
+            imageElement.remove();
+            if (imagePreview.children.length === 0) {
+                imagePreview.classList.add('hidden');
+            }
+        }
+
+        // Like functionality
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    this.classList.add('liked');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    this.classList.remove('liked');
+                }
+            });
+        });
+
+        // Store uploaded images
+        let uploadedImages = [];
+
+        // Load items from API on page load
+        async function loadItems() {
+            try {
+                const response = await fetch('http://localhost:3001/api/items');
+                const items = await response.json();
+                
+                if (items.length > 0) {
+                    // Hide empty state and show items grid
+                    document.getElementById('emptyState').classList.add('hidden');
+                    document.getElementById('itemsGrid').classList.remove('hidden');
+                    
+                    // Clear existing items
+                    document.getElementById('itemsGrid').innerHTML = '';
+                    
+                    // Add items to grid
+                    items.forEach(item => {
+                        const imageUrl = item.imagePath ? `http://localhost:3001/${item.imagePath}` : 'https://via.placeholder.com/400x300/667eea/ffffff?text=No+Image';
+                        
+                        createItemCard({
+                            id: item.id,
+                            title: item.title,
+                            price: item.price,
+                            description: item.description,
+                            category: item.category,
+                            seller: item.author?.displayName || 'Unknown',
+                            image: imageUrl
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading items:', error);
+            }
+        }
+
+        // Form submission
+        document.getElementById('itemForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const title = this.querySelector('input[type="text"]').value;
+            const price = this.querySelector('input[type="number"]').value;
+            const description = this.querySelector('textarea').value;
+            const category = this.querySelector('select').value;
+            const condition = this.querySelectorAll('select')[1].value;
+            
+            try {
+                // Create FormData for file upload
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('description', description);
+                formData.append('price', price);
+                formData.append('category', category);
+                formData.append('condition', condition);
+                
+                // Add the first uploaded image if available
+                if (uploadedImages.length > 0) {
+                    // Convert data URL to blob
+                    const response = await fetch(uploadedImages[0]);
+                    const blob = await response.blob();
+                    formData.append('image', blob, 'item-image.jpg');
+                }
+                
+                // Send to API
+                const response = await fetch('http://localhost:3001/api/items', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const newItem = await response.json();
+                    
+                    // Hide empty state and show items grid
+                    document.getElementById('emptyState').classList.add('hidden');
+                    document.getElementById('itemsGrid').classList.remove('hidden');
+                    
+                    // Add new item to grid
+                    createItemCard({
+                        id: newItem.id,
+                        title: newItem.title,
+                        price: newItem.price,
+                        description: newItem.description,
+                        category: newItem.category,
+                        seller: newItem.author?.displayName || 'You',
+                        image: newItem.imagePath ? `http://localhost:3001/${newItem.imagePath}` : (uploadedImages[0] || 'https://via.placeholder.com/400x300/667eea/ffffff?text=No+Image')
+                    });
+                    
+                    alert('Item posted successfully! 🎉');
+                    closePostModal();
+                    this.reset();
+                    document.getElementById('imagePreview').classList.add('hidden');
+                    document.getElementById('imagePreview').innerHTML = '';
+                    uploadedImages = []; // Clear uploaded images
+                } else {
+                    throw new Error('Failed to create item');
+                }
+            } catch (error) {
+                console.error('Error creating item:', error);
+                alert('Failed to post item. Please try again.');
+            }
+        });
+        
+        // Function to create item card
+        function createItemCard(item) {
+            const itemsGrid = document.getElementById('itemsGrid');
+            const itemCard = document.createElement('div');
+            itemCard.className = 'item-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer';
+            itemCard.innerHTML = `
+                <div class="relative">
+                    <img src="${item.image}" alt="${item.title}" class="w-full h-48 object-cover">
+                    <div class="absolute top-2 right-2">
+                        <button class="like-button bg-white bg-opacity-90 p-2 rounded-full hover:bg-opacity-100 transition-all" onclick="event.stopPropagation()">
+                            <i class="far fa-heart text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="absolute bottom-2 left-2">
+                        <span class="price-tag text-white px-3 py-1 rounded-full text-sm font-bold">$${item.price}</span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2">${item.title}</h3>
+                    <p class="text-gray-600 text-sm mb-3">${item.description}</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <img src="https://via.placeholder.com/24x24/667eea/ffffff?text=Y" alt="" class="w-6 h-6 rounded-full mr-3">
+                            <span class="text-sm font-medium text-gray-700">${item.seller}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="text-gray-400 hover:text-indigo-600 transition-colors" onclick="event.stopPropagation()">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                            <button class="text-gray-400 hover:text-indigo-600 transition-colors" onclick="event.stopPropagation()">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add click functionality to open item modal
+            itemCard.addEventListener('click', () => {
+                openItemModal(item);
+            });
+            
+            // Add like functionality to new card
+            const likeButton = itemCard.querySelector('.like-button');
+            likeButton.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    this.classList.add('liked');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    this.classList.remove('liked');
+                }
+            });
+            
+            itemsGrid.appendChild(itemCard);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('postModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePostModal();
+            }
+        });
+
+        document.getElementById('itemModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeItemModal();
+            }
+        });
+
+        // Item modal functions
+        function openItemModal(item) {
+            // Populate modal with item data
+            document.getElementById('itemModalImage').src = item.image;
+            document.getElementById('itemModalTitle').textContent = item.title;
+            document.getElementById('itemModalTitleText').textContent = item.title;
+            document.getElementById('itemModalPrice').textContent = `$${item.price}`;
+            document.getElementById('itemModalDescription').textContent = item.description;
+            document.getElementById('itemModalCategory').textContent = item.category;
+            document.getElementById('itemModalCategoryDetail').textContent = item.category;
+            document.getElementById('itemModalSellerName').textContent = item.seller;
+            document.getElementById('itemModalDate').textContent = 'Today'; // You can format this properly
+            
+            // Show modal
+            document.getElementById('itemModal').classList.remove('hidden');
+        }
+
+        function closeItemModal() {
+            document.getElementById('itemModal').classList.add('hidden');
+        }
+
+        // Load items when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadItems();
+        });
+    </script>
+</body>
+</html>

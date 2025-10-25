@@ -6,37 +6,147 @@
     <title>KnightHaven - UCF Community Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
         }
+        
         .hero-bg {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>') no-repeat center center;
+            background-size: cover;
+            opacity: 0.3;
+        }
+        
         .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
         }
+        
         .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .hero-title {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #e0f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .feature-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.6);
+        }
+        
+        .stats-counter {
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
         }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
-    <nav class="bg-white shadow-lg">
+    <nav class="fixed w-full z-50 nav-blur shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <h1 class="text-2xl font-bold text-indigo-600">⚔️ KnightHaven</h1>
+                        <h1 class="text-2xl font-bold gradient-text">⚔️ KnightHaven</h1>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="#features" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Features</a>
-                    <a href="#about" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">About</a>
-                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#features" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Features</a>
+                    <a href="marketplace.html" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Marketplace</a>
+                    <a href="#about" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors">About</a>
+                    <button class="cta-button text-white px-6 py-2 rounded-lg text-sm font-medium">
                         Get Started
+                    </button>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button class="text-gray-700 hover:text-indigo-600">
+                        <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
             </div>
@@ -44,81 +154,124 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-bg text-white py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="hero-bg text-white py-32 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6">
-                    Welcome to <span class="text-yellow-300">KnightHaven</span>
-                </h1>
-                <p class="text-xl md:text-2xl mb-8 text-blue-100">
-                    Your UCF community hub for social connection and local commerce
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button class="bg-yellow-400 text-gray-900 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-300 transition-colors">
-                        <i class="fas fa-rocket mr-2"></i>Start Exploring
-                    </button>
-                    <button class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors">
-                        <i class="fas fa-play mr-2"></i>Watch Demo
-                    </button>
+                <div class="fade-in">
+                    <h1 class="text-5xl md:text-7xl font-black mb-8 hero-title leading-tight">
+                        Welcome to <span class="text-yellow-400 pulse-animation">KnightHaven</span>
+                    </h1>
+                    <p class="text-xl md:text-3xl mb-12 text-gray-200 font-light max-w-4xl mx-auto leading-relaxed">
+                        Your UCF community hub for social connection and local commerce
+                    </p>
                 </div>
+                
+                <!-- Logo Section -->
+                <div class="fade-in flex justify-center items-center mb-16">
+                    <div class="relative">
+                        <!-- Your custom logo image -->
+                        <img 
+                            src="image.png" 
+                            alt="KnightHaven Logo" 
+                            class="w-48 h-48 md:w-56 md:h-56 object-contain floating shadow-2xl rounded-3xl"
+                            style="filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.3));"
+                        >
+                        <!-- Optional UCF badge overlay -->
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-300 rounded-full flex items-center justify-center shadow-lg">
+                            <span class="text-yellow-800 text-sm font-bold">UCF</span>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
+        </div>
+        
+        <!-- Floating Elements -->
+        <div class="absolute top-20 left-10 floating">
+            <div class="w-20 h-20 bg-yellow-400 rounded-full opacity-30"></div>
+        </div>
+        <div class="absolute top-40 right-20 floating" style="animation-delay: -2s;">
+            <div class="w-16 h-16 bg-yellow-300 rounded-full opacity-30"></div>
+        </div>
+        <div class="absolute bottom-20 left-20 floating" style="animation-delay: -4s;">
+            <div class="w-12 h-12 bg-yellow-500 rounded-full opacity-30"></div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-20 bg-white">
+    <section id="features" class="py-24 bg-gradient-to-br from-gray-50 to-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                    Everything You Need in One Platform
+            <div class="text-center mb-20 fade-in">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    Everything You Need in <span class="gradient-text">One Platform</span>
                 </h2>
-                <p class="text-xl text-gray-600">
-                    Connect, buy, sell, and discover within the UCF community
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Connect, buy, sell, and discover within the UCF community. Built by Knights, for Knights.
                 </p>
             </div>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <!-- Social Feed -->
-                <div class="card-hover bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <div class="card-hover feature-card p-8 rounded-2xl shadow-xl">
                     <div class="text-center">
-                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-comments text-blue-600 text-2xl"></i>
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-comments text-white text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Social Feed</h3>
-                        <p class="text-gray-600">Share updates, promote events, and connect with fellow Knights</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Social Feed</h3>
+                        <p class="text-gray-600 leading-relaxed">Share updates, promote events, and connect with fellow Knights in real-time</p>
+                        <div class="mt-6">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-bolt mr-2"></i>Live Updates
+                            </span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Marketplace -->
-                <div class="card-hover bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <div class="card-hover feature-card p-8 rounded-2xl shadow-xl">
                     <div class="text-center">
-                        <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-store text-green-600 text-2xl"></i>
+                        <div class="bg-gradient-to-br from-green-500 to-green-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-store text-white text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Marketplace</h3>
-                        <p class="text-gray-600">Buy and sell items safely within the UCF network</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Marketplace</h3>
+                        <p class="text-gray-600 leading-relaxed">Buy and sell items safely within the verified UCF network</p>
+                        <div class="mt-6">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-shield-alt mr-2"></i>Verified Only
+                            </span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Services -->
-                <div class="card-hover bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <div class="card-hover feature-card p-8 rounded-2xl shadow-xl">
                     <div class="text-center">
-                        <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-tools text-purple-600 text-2xl"></i>
+                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-tools text-white text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Services</h3>
-                        <p class="text-gray-600">Discover tutoring, ridesharing, and other local services</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Services</h3>
+                        <p class="text-gray-600 leading-relaxed">Discover tutoring, ridesharing, and other local services from trusted Knights</p>
+                        <div class="mt-6">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                <i class="fas fa-star mr-2"></i>Rated Services
+                            </span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- News -->
-                <div class="card-hover bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <div class="card-hover feature-card p-8 rounded-2xl shadow-xl">
                     <div class="text-center">
-                        <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-newspaper text-red-600 text-2xl"></i>
+                        <div class="bg-gradient-to-br from-red-500 to-red-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-newspaper text-white text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">UCF News</h3>
-                        <p class="text-gray-600">Stay informed with curated UCF and Orlando news</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">UCF News</h3>
+                        <p class="text-gray-600 leading-relaxed">Stay informed with curated UCF and Orlando news that matters to you</p>
+                        <div class="mt-6">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                <i class="fas fa-filter mr-2"></i>Curated
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -126,37 +279,52 @@
     </section>
 
     <!-- Verification Badge Section -->
-    <section class="py-20 bg-gray-50">
+    <section class="py-24 bg-gradient-to-br from-gray-100 to-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                        Verified Knight Status
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="fade-in">
+                    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
+                        <span class="gradient-text">Verified Knight</span> Status
                     </h2>
-                    <p class="text-lg text-gray-600 mb-6">
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
                         UCF students get exclusive access with verified @ucf.edu email authentication. 
                         Show your "Verified Knight" badge and gain entry to student-only spaces and listings.
                     </p>
-                    <div class="space-y-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
-                            <span class="text-gray-700">Exclusive student-only content</span>
+                    <div class="space-y-6">
+                        <div class="flex items-center group">
+                            <div class="bg-green-100 p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                            </div>
+                            <span class="text-gray-700 text-lg font-medium">Exclusive student-only content</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
-                            <span class="text-gray-700">Verified Knight badge for trust</span>
+                        <div class="flex items-center group">
+                            <div class="bg-green-100 p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-shield-alt text-green-600 text-xl"></i>
+                            </div>
+                            <span class="text-gray-700 text-lg font-medium">Verified Knight badge for trust</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
-                            <span class="text-gray-700">Priority access to opportunities</span>
+                        <div class="flex items-center group">
+                            <div class="bg-green-100 p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-star text-green-600 text-xl"></i>
+                            </div>
+                            <span class="text-gray-700 text-lg font-medium">Priority access to opportunities</span>
                         </div>
                     </div>
                 </div>
-                <div class="text-center">
-                    <div class="bg-gradient-to-r from-yellow-400 to-orange-500 p-8 rounded-2xl shadow-xl">
-                        <i class="fas fa-crown text-white text-6xl mb-4"></i>
-                        <h3 class="text-2xl font-bold text-white mb-2">Verified Knight</h3>
-                        <p class="text-white opacity-90">@ucf.edu verified</p>
+                <div class="text-center fade-in">
+                    <div class="relative">
+                        <div class="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-12 rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+                            <div class="absolute -top-4 -right-4 bg-white rounded-full p-3 shadow-lg">
+                                <i class="fas fa-check text-green-600 text-2xl"></i>
+                            </div>
+                            <i class="fas fa-crown text-white text-8xl mb-6 floating"></i>
+                            <h3 class="text-3xl font-bold text-white mb-3">Verified Knight</h3>
+                            <p class="text-white opacity-90 text-lg">@ucf.edu verified</p>
+                            <div class="mt-6 bg-white bg-opacity-20 rounded-xl p-4">
+                                <div class="text-white font-semibold">Trust Score: 100%</div>
+                                <div class="text-white opacity-80 text-sm">Community Verified</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -164,22 +332,49 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 gradient-bg text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">
-                Ready to Join the KnightHaven Community?
-            </h2>
-            <p class="text-xl mb-8 text-blue-100">
-                Start connecting with fellow Knights today
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="bg-white text-indigo-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
-                    <i class="fas fa-user-plus mr-2"></i>Sign Up Now
-                </button>
-                <button class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Log In
-                </button>
+    <section class="py-24 gradient-bg text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="fade-in">
+                <h2 class="text-4xl md:text-6xl font-bold mb-8">
+                    Ready to Join the <span class="text-yellow-400">KnightHaven</span> Community?
+                </h2>
+                <p class="text-2xl mb-12 text-gray-200 max-w-3xl mx-auto leading-relaxed">
+                    Start connecting with fellow Knights today and be part of something bigger
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                    <button class="group bg-yellow-400 text-black px-12 py-4 rounded-2xl text-xl font-bold hover:bg-yellow-300 transition-all duration-300 transform hover:scale-105 shadow-2xl">
+                        <i class="fas fa-user-plus mr-3 group-hover:rotate-12 transition-transform"></i>Sign Up Now
+                    </button>
+                    <button class="group glass-effect text-white px-12 py-4 rounded-2xl text-xl font-bold hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-sign-in-alt mr-3 group-hover:scale-110 transition-transform"></i>Log In
+                    </button>
+                </div>
+                
+                <!-- Trust Indicators -->
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-400 mb-2">100%</div>
+                        <div class="text-gray-300">Secure & Verified</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-400 mb-2">24/7</div>
+                        <div class="text-gray-300">Community Support</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-400 mb-2">Free</div>
+                        <div class="text-gray-300">Always Free to Use</div>
+                    </div>
+                </div>
             </div>
+        </div>
+        
+        <!-- Background Elements -->
+        <div class="absolute top-10 left-10 floating">
+            <div class="w-32 h-32 bg-yellow-400 rounded-full opacity-10"></div>
+        </div>
+        <div class="absolute bottom-10 right-10 floating" style="animation-delay: -3s;">
+            <div class="w-24 h-24 bg-blue-400 rounded-full opacity-10"></div>
         </div>
     </section>
 
@@ -226,7 +421,7 @@
     </footer>
 
     <script>
-        // Simple smooth scrolling for navigation links
+        // Enhanced smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -240,30 +435,93 @@
             });
         });
 
-        // Add some interactive effects
+        // Enhanced interactive effects
         document.addEventListener('DOMContentLoaded', function() {
-            // Animate cards on scroll
+            // Intersection Observer for fade-in animations
             const observerOptions = {
                 threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
+                rootMargin: '0px 0px -100px 0px'
             };
 
             const observer = new IntersectionObserver(function(entries) {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
+                        entry.target.classList.add('visible');
                     }
                 });
             }, observerOptions);
 
-            // Observe all cards
-            document.querySelectorAll('.card-hover').forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(card);
+            // Observe all fade-in elements
+            document.querySelectorAll('.fade-in').forEach(element => {
+                observer.observe(element);
             });
+
+            // Parallax effect for hero section
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const parallax = document.querySelector('.hero-bg');
+                if (parallax) {
+                    const speed = scrolled * 0.5;
+                    parallax.style.transform = `translateY(${speed}px)`;
+                }
+            });
+
+            // Counter animation for stats
+            function animateCounters() {
+                const counters = document.querySelectorAll('.stats-counter');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.textContent.replace(/[^\d]/g, ''));
+                    const duration = 2000;
+                    const increment = target / (duration / 16);
+                    let current = 0;
+                    
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            counter.textContent = counter.textContent.replace(/\d+/, target);
+                            clearInterval(timer);
+                        } else {
+                            const displayValue = Math.floor(current);
+                            counter.textContent = counter.textContent.replace(/\d+/, displayValue);
+                        }
+                    }, 16);
+                });
+            }
+
+            // Trigger counter animation when stats section is visible
+            const statsObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounters();
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            const statsSection = document.querySelector('.hero-bg');
+            if (statsSection) {
+                statsObserver.observe(statsSection);
+            }
+
+            // Add hover effects to cards
+            document.querySelectorAll('.card-hover').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Mobile menu toggle (if needed)
+            const mobileMenuButton = document.querySelector('.md\\:hidden button');
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', function() {
+                    // Add mobile menu functionality here
+                    console.log('Mobile menu clicked');
+                });
+            }
         });
     </script>
 </body>
