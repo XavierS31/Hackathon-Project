@@ -10,6 +10,8 @@ createRoot(document.getElementById('root')).render(
       domain={auth0Config.domain}
       clientId={auth0Config.clientId}
       authorizationParams={auth0Config.authorizationParams}
+      useRefreshTokens={true}
+      cacheLocation="localstorage"
     >
       <App />
     </Auth0Provider>
