@@ -16,6 +16,14 @@ export const isUCFUser = (user) => {
   return user?.email?.endsWith('@ucf.edu') || false;
 };
 
+// Helper function to convert string to title case
+const toTitleCase = (str) => {
+  if (!str) return str;
+  return str.replace(/\w\S*/g, (txt) => 
+    txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  );
+};
+
 // Helper function to get display name (username, name, or email)
 export const getDisplayName = (user) => {
   // Check for custom username claim first (set by Auth0 post-login action)
@@ -34,7 +42,10 @@ export const getDisplayName = (user) => {
   // Don't use user.name if it's the same as the email (common Auth0 behavior)
   const nameField = user?.name && user.name !== user.email ? user.name : null;
   
-  return customUsername || user?.username || user?.preferred_username || nameField || user?.nickname || user.email.split('@')[0] || 'User';
+  const displayName = customUsername || user?.username || user?.preferred_username || nameField || user?.nickname || user.email.split('@')[0] || 'User';
+  
+  // Convert to title case
+  return toTitleCase(displayName);
 };
 
 // Helper function to check if user's email is verified
