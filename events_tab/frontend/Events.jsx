@@ -30,27 +30,14 @@ const Events = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString || dateString === 'Date TBD') return 'Date TBD';
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    } catch {
-      return dateString;
-    }
-  };
+  // Date formatting removed since all events are from Today's Events
 
 
   if (loading) {
     return (
       <div className="events-container">
         <div className="events-header">
-          <h1>🎉 UCF Events</h1>
+          <h1>UCF UCF Events</h1>
           <p>Discover what's happening at UCF</p>
         </div>
         <div className="loading-spinner">
@@ -65,11 +52,11 @@ const Events = () => {
     return (
       <div className="events-container">
         <div className="events-header">
-          <h1>🎉 UCF Events</h1>
+          <h1>UCF UCF Events</h1>
           <p>Discover what's happening at UCF</p>
         </div>
         <div className="error-message">
-          <h3>⚠️ Unable to load events</h3>
+          <h3>WARNING Unable to load events</h3>
           <p>{error}</p>
           <button onClick={fetchEvents} className="retry-button">
             Try Again
@@ -82,7 +69,7 @@ const Events = () => {
   return (
     <div className="events-container">
       <div className="events-header">
-        <h1>🎉 UCF Events</h1>
+        <h1>UCF UCF Events</h1>
         <p>Discover what's happening at UCF today</p>
         
         <div className="events-controls">
@@ -98,7 +85,7 @@ const Events = () => {
             }} 
             className="home-button"
           >
-            🏠 Back to Home
+            HOME Back to Home
           </button>
         </div>
       </div>
@@ -140,7 +127,7 @@ const Events = () => {
                   <img src={event.image} alt={event.title} />
                 ) : (
                   <div className="default-event-image">
-                    <span>⚔️</span>
+                    <span>UCF</span>
                   </div>
                 )}
               </div>
@@ -148,30 +135,25 @@ const Events = () => {
               <div className="event-content">
                 <h3 className="event-title">{event.title}</h3>
                 
-                <div className="event-meta">
-                  <div className="event-date">
-                    <span className="meta-icon">📅</span>
-                    <span>{formatDate(event.date)}</span>
-                  </div>
-                  
-                  {event.time && event.time !== 'Time TBD' && (
-                    <div className="event-time">
-                      <span className="meta-icon">🕐</span>
-                      <span>{event.time}</span>
-                    </div>
-                  )}
-                  
-                  <div className="event-location">
-                    <span className="meta-icon">📍</span>
-                    <span>{event.location}</span>
-                  </div>
-                </div>
+        <div className="event-meta">
+          {event.time && event.time !== 'Time TBD' && (
+            <div className="event-time">
+              <span className="meta-icon">TIME</span>
+              <span>{event.time}</span>
+            </div>
+          )}
+          
+          <div className="event-location">
+            <span className="meta-icon">LOCATION</span>
+            <span>{event.location}</span>
+          </div>
+        </div>
                 
                 <p className="event-description">{event.description}</p>
                 
                 <div className="event-footer">
                   <div className="event-source">
-                    <span className="ucf-symbol">⚔️</span>
+                    <span className="ucf-symbol">UCF</span>
                     <span className="source-badge">UCF Events</span>
                   </div>
                   
