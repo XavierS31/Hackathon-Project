@@ -1,15 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import logoImg from "./assets/KNIGHTHAVENLOGOWHITE.png";
 import { useAuth0 } from '@auth0/auth0-react';
+import Events from '../../events_tab/frontend/Events';
 
 function App() {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+  const [currentPage, setCurrentPage] = useState('home');
 
-  // temp nav behavior: just show a popup for now
+  // Listen for navigation messages from child components
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data && event.data.type === 'navigate') {
+        setCurrentPage(event.data.page);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  // Navigation handler
   const handleNav = (pageName) => {
-    if (pageName === 'Home' && isAuthenticated) {
-      alert(`Welcome back, ${user?.name || user?.email}!`);
+    if (pageName === 'Home') {
+      setCurrentPage('home');
+      if (isAuthenticated) {
+        alert(`Welcome back, ${user?.name || user?.email}!`);
+      }
+    } else if (pageName === 'Events') {
+      setCurrentPage('events');
     } else {
       alert(`${pageName} page coming soon!`);
     }
@@ -22,6 +41,11 @@ function App() {
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
+
+  // Render Events page if current page is events
+  if (currentPage === 'events') {
+    return <Events />;
+  }
 
   return (
     <div className="page-wrap">
