@@ -27,13 +27,113 @@ function App() {
     <div className="page-wrap">
       {/* HERO / TOP */}
       <header className="hero">
+        {/* LEFT HOLO DECOR */}
+        <div className="holo-left">
+          <div className="holo-panel holo-float-slow">
+            <div className="holo-frame"></div>
+
+            <div className="holo-icon">
+              {/* shield / crest style */}
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="M9 12l2 2 4-4" />
+              </svg>
+            </div>
+
+            <div className="holo-lines">
+              <div className="holo-line short"></div>
+              <div className="holo-line long"></div>
+              <div className="holo-line short"></div>
+            </div>
+          </div>
+
+          <div className="holo-panel holo-float-fast">
+            <div className="holo-frame small"></div>
+
+            <div className="holo-icon">
+              {/* triangular glyph */}
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12" y2="17"/>
+              </svg>
+            </div>
+
+            <div className="holo-lines stacked">
+              <div className="holo-line tiny"></div>
+              <div className="holo-line tiny"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT HOLO DECOR */}
+        <div className="holo-right">
+          <div className="holo-panel holo-float-slow">
+            <div className="holo-frame tall"></div>
+
+            <div className="holo-icon">
+              {/* tag / circuit shape */}
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20.59 13.41l-7.18 7.18a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <circle cx="7.5" cy="7.5" r="1.5"/>
+              </svg>
+            </div>
+
+            <div className="holo-lines">
+              <div className="holo-line long"></div>
+              <div className="holo-line short"></div>
+            </div>
+          </div>
+
+          <div className="holo-panel holo-float-fast">
+            <div className="holo-frame micro"></div>
+
+            <div className="holo-lines stagger">
+              <div className="holo-line tiny glow"></div>
+              <div className="holo-line tiny"></div>
+              <div className="holo-line tiny glow"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* CENTER HERO CONTENT */}
         <div className="hero-inner">
-          {/* Logo */}
-          <img
-            src={logoImg}
-            alt="KnightHaven logo"
-            className="logo-img"
-          />
+          {/* Logo with pulsing glow */}
+          <div className="logo-wrapper">
+            <div className="glow-pulse"></div>
+            <img
+              src={logoImg}
+              alt="KnightHaven logo"
+              className="logo-img"
+            />
+          </div>
 
           {/* App name */}
           <div className="app-name">KnightHaven</div>
@@ -48,7 +148,16 @@ function App() {
           {isLoading ? (
             <div style={{ margin: '1rem 0', color: '#666' }}>Loading...</div>
           ) : isAuthenticated ? (
-            <div style={{ margin: '1rem 0', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div
+              style={{
+                margin: '1rem 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                flexWrap: 'wrap',
+                justifyContent: 'center'
+              }}
+            >
               <div style={{ color: '#2c3e50', fontWeight: 'bold' }}>
                 Welcome, {user?.name || user?.email}!
               </div>
@@ -195,8 +304,6 @@ function App() {
           </ul>
         </section>
 
-        
-
         {/* Account system */}
         <section className="card">
           <div className="section-label">👥 Account System</div>
@@ -256,4 +363,3 @@ function App() {
 }
 
 export default App;
-
