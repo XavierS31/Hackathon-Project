@@ -4,6 +4,7 @@ import logoImg from "./assets/KNIGHTHAVENLOGOWHITE.png";
 import { useAuth0 } from '@auth0/auth0-react';
 import ServicesPage from './servicePages';
 import Events from './Events';
+import Marketplace from './Marketplace';
 import { isUCFUser, getDisplayName, isEmailVerified, isVerifiedUCFUser } from './auth0-config.js';
 
 function App() {
@@ -136,6 +137,8 @@ function App() {
       }
     } else if (pageName === 'Events') {
       setCurrentPage('events');
+    } else if (pageName === 'Marketplace') {
+      setCurrentPage('marketplace');
     } else if (pageName === 'Services') {
       // Handle Services page with Yelp data fetching
       fetchYelpData();
@@ -184,7 +187,6 @@ function App() {
       const data = await res.json();
       console.log("✅ Fresh Yelp Data successfully fetched:", data);
       
-                alert(`🔄 Refreshed! Stored ${data.stored} fresh places (max 50)\n🎲 Categories: ${data.categories ? data.categories.join(', ') : 'Random'}`);
       // Navigate to services page after fetching fresh data
       setCurrentPage('services');
     } catch (err) {
@@ -229,6 +231,11 @@ function App() {
   // Show events page if currentPage is 'events'
   if (currentPage === 'events') {
     return <Events onBack={() => setCurrentPage('home')} />;
+  }
+
+  // Show marketplace page if currentPage is 'marketplace'
+  if (currentPage === 'marketplace') {
+    return <Marketplace onBack={() => setCurrentPage('home')} />;
   }
 
   return (
