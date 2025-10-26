@@ -169,3 +169,4 @@ if %ALL_TESTS_PASSED%==1 (
 
 echo.
 pause
+

@@ -62,3 +62,19 @@ model Service {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+//Yelp Places
+model Place {
+  id           String   @id @default(cuid())
+  yelpId       String   @unique
+  name         String
+  description  String?
+  rating       Float?
+  reviewCount  Int?
+  address      String?
+  city         String?
+  latitude     Float?
+  longitude    Float?
+  createdAt    DateTime @default(now())
+}
+

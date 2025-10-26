@@ -26,17 +26,17 @@ In your Auth0 application settings, update these URLs:
 
 **Allowed Callback URLs:**
 ```
-http://localhost:3000
+http://localhost:5174
 ```
 
 **Allowed Logout URLs:**
 ```
-http://localhost:3000
+http://localhost:5174
 ```
 
 **Allowed Web Origins:**
 ```
-http://localhost:3000
+http://localhost:5174
 ```
 
 ### 4. Get Your Credentials
@@ -60,7 +60,7 @@ export const auth0Config = {
 
 ### 6. Test the Integration
 1. Start your app: `npm run dev` (frontend) and `npm run dev` (backend)
-2. Go to `http://localhost:3000`
+2. Go to `http://localhost:5174`
 3. Click **"Sign In"** or **"Sign Up"**
 4. You should be redirected to Auth0's login page
 5. After authentication, you'll be redirected back to your app
@@ -87,17 +87,17 @@ export const auth0Config = {
 ### Common Issues:
 
 1. **"Invalid redirect_uri" error**
-   - Make sure `http://localhost:3000` is in your Auth0 Allowed Callback URLs
+   - Make sure `http://localhost:5174` is in your Auth0 Allowed Callback URLs
 
 2. **"Invalid client" error**
    - Double-check your Client ID in auth0-config.js
 
 3. **CORS errors**
-   - Make sure `http://localhost:3000` is in your Allowed Web Origins
+   - Make sure `http://localhost:5174` is in your Allowed Web Origins
 
 4. **App not loading after login**
    - Check that your Domain and Client ID are correct
-   - Make sure the app is running on port 3000
+   - Make sure the app is running on port 5174
 
 ## 🚀 Production Deployment
 

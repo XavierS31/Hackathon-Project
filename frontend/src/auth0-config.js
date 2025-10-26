@@ -8,7 +8,9 @@ export const auth0Config = {
     redirect_uri: window.location.origin,
     audience: 'https://knighthaven-api',
     scope: 'openid profile email read:current_user read:users offline_access'
-  }
+  },
+  useRefreshTokens: true,
+  cacheLocation: 'localstorage'
 };
 
 // Helper function to check if user is UCF student
@@ -63,12 +65,14 @@ export const isVerifiedUCFUser = (user) => {
   return isUCFUser(user) && isEmailVerified(user);
 };
 
-
 // Instructions for setup:
 // 1. Go to https://auth0.com and create a free account
 // 2. Create a new Single Page Application
 // 3. Copy your Domain and Client ID from the Auth0 dashboard
 // 4. Replace the values above with your actual credentials
-// 5. Add http://localhost:3000 to your Allowed Callback URLs
-// 6. Add http://localhost:3000 to your Allowed Logout URLs
-// 7. Add http://localhost:3000 to your Allowed Web Origins
+// 5. Add http://localhost:5174 to your Allowed Callback URLs
+// 6. Add http://localhost:5174 to your Allowed Logout URLs
+// 7. Add http://localhost:5174 to your Allowed Web Origins
+// 8. IMPORTANT: Enable "Refresh Token Rotation" in your Auth0 dashboard
+// 9. IMPORTANT: Enable "Refresh Token Expiration" and set it to 30 days
+// 10. IMPORTANT: Make sure "Offline Access" is enabled in your Auth0 application settings
