@@ -9,9 +9,9 @@ echo ======================================
 
 REM Kill existing processes
 echo 🛑 Stopping existing servers...
-taskkill /f /im node.exe >nul 2>&1
-taskkill /f /im python.exe >nul 2>&1
-taskkill /f /im python3.exe >nul 2>&1
+taskkill /f /im node.exe 2>nul
+taskkill /f /im python.exe 2>nul
+taskkill /f /im python3.exe 2>nul
 timeout /t 2 /nobreak >nul
 echo ✅ Cleanup complete
 
@@ -111,9 +111,9 @@ if not exist "prisma\dev.db" (
 
 REM Kill processes on ports 3000, 3001, and 5001
 echo 🔪 Ensuring ports 3000, 3001, and 5001 are available...
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3000"') do taskkill /f /pid %%a >nul 2>&1
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3001"') do taskkill /f /pid %%a >nul 2>&1
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5001"') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3000"') do taskkill /f /pid %%a 2>nul
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3001"') do taskkill /f /pid %%a 2>nul
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5001"') do taskkill /f /pid %%a 2>nul
 timeout /t 2 /nobreak >nul
 
 REM Set environment variables
